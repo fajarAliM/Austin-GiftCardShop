@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import VerticalCards from "../VerticalCards";
 import { TGiftCard } from "../types/GiftCard";
 import { fetchGiftCards } from "@/lib/reloadly";
+import PurchaseCard from "../PurchaseCard";
 
 const Main = () => {
     const [giftcards, setGiftCards] = useState([]);
@@ -39,7 +40,7 @@ const Main = () => {
     return (
         <div className="p-8 flex justify-center items-start gap-8">
             <VerticalCards giftcards={giftcards} handleSelectedCard={handleSelectedCard} />
-            <div>Statci Popup with Card info, Form and Payment Integration</div>
+            <PurchaseCard currentCard={selectedCard} />
         </div>
     );
 }

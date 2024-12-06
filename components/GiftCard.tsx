@@ -2,14 +2,14 @@ import { TGiftCard } from "./types/GiftCard";
 
 interface GiftCardProps {
     giftcard: TGiftCard;
-    handleSelectedCard: (giftcard: TGiftCard) => void;
+    handleSelectedCard?: (giftcard: TGiftCard) => void;
 }
 
 const GiftCard = ({ giftcard, handleSelectedCard }: GiftCardProps) => {
     return (
         <div
-            onClick={() => handleSelectedCard(giftcard)}
-            className="bg-slate-200 overflow-hidden rounded-xl border border-slate-300">
+            onClick={() => handleSelectedCard && handleSelectedCard(giftcard)}
+            className="h-full bg-slate-200 overflow-hidden rounded-xl border border-slate-300">
             {/* <div className="flex flex-col justify-center items-end">
                 <span className="font-bold text-base">Virtual</span>
                 <span className="font-light text-sm">REWARD</span>
@@ -27,6 +27,7 @@ const GiftCard = ({ giftcard, handleSelectedCard }: GiftCardProps) => {
                 width={100}
                 height={100}
                 alt="gift card"
+                style={{ width: '100%', height: '100%' }}
             />
         </div>
     )
