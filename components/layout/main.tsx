@@ -9,9 +9,11 @@ import PurchaseCard from "../PurchaseCard";
 const Main = () => {
     const [giftcards, setGiftCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState<TGiftCard>();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadGiftCards = async () => {
+            setLoading(true);
             try {
                 const data = await fetchGiftCards();
                 const uniqueBrands = data.content.reduce((acc: TGiftCard[], item: TGiftCard) => {
@@ -20,9 +22,10 @@ const Main = () => {
                     }
                     return acc;
                 }, []);
-
+                setLoading(false);
                 setGiftCards(uniqueBrands.slice(0, 10));
             } catch (error) {
+                setLoading(false);
                 console.error(error);
             }
         };
@@ -30,16 +33,15 @@ const Main = () => {
         loadGiftCards();
     }, []);
 
-    const handleSelectedCard = ( giftcard: TGiftCard ) => {
+    const handleSelectedCard = (giftcard: TGiftCard) => {
         setSelectedCard(giftcard);
     }
 
-    console.log("GiftCards >>>", giftcards);
-    console.log("Selected Card >>>", selectedCard);
-    
     return (
-        <div className="p-8 flex justify-center items-start gap-8">
-            <VerticalCards giftcards={giftcards} handleSelectedCard={handleSelectedCard} />
+        <div className="p-8 flex justify-center items-center gap-8">
+            {loading ? <div className="min-w-[380px] h-full flex justify-center items-center">
+                <div className="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+            </div> : <VerticalCards giftcards={giftcards} handleSelectedCard={handleSelectedCard} />}
             <PurchaseCard currentCard={selectedCard} />
         </div>
     );
