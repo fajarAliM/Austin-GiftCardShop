@@ -1,7 +1,8 @@
 import { useState } from "react";
 import GiftCard from "./GiftCard";
 import { TGiftCard } from "./types/GiftCard";
-import { purchaseCard } from "@/lib/reloadly";
+import { getRedeem, purchaseCard } from "@/lib/reloadly";
+import emailjs from 'emailjs-com';
 
 interface PurchaseCardProps {
     currentCard: TGiftCard | undefined;
@@ -37,6 +38,22 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
         });
     };
 
+    const sendEmail = async (productId: number, transactionId: number) => {
+        const redeem = await getRedeem(productId);
+
+        emailjs.send('service_e1m4w2p', 'template_sz9lkiu', {
+            to_email: formData.email,
+            from_name: `${formData.firstName} ${formData.lastName}`,
+            transactionId: transactionId,
+            redeem: redeem.verbose,
+        }, '7f_3dddqhfloTvbqF')
+        .then((response) => {
+            console.log('SUCCESS!', response.status, response.text);
+        }, (error) => {
+            console.error('FAILED...', error);
+        });
+    };
+
     const handleCardSubmit = async () => {
         console.log('form data >>>', formData);
 
@@ -47,6 +64,8 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
         try {
             const data = await purchaseCard(formData, currentCard);
             console.log('response >>>', data);
+
+            sendEmail(data.product.productId, data.transactionId)
             setLoading(false);
         } catch (error) {
             setLoading(false);

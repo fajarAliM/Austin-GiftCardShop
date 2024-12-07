@@ -37,6 +37,9 @@ const Main = () => {
         setSelectedCard(giftcard);
     }
 
+    console.log('Main data >>>', giftcards);
+    console.log('Selected >>>', selectedCard);
+
     return (
         <div className="p-8 flex justify-center items-center gap-8">
             {loading ? <div className="min-w-[380px] h-full flex justify-center items-center">
