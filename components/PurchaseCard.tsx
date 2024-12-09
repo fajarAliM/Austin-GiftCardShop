@@ -3,6 +3,7 @@ import GiftCard from "./GiftCard";
 import { TGiftCard } from "./types/GiftCard";
 import { getRedeem, purchaseCard } from "@/lib/reloadly";
 import emailjs from 'emailjs-com';
+import PaypalButton from "./PaypalButton";
 
 interface PurchaseCardProps {
     currentCard: TGiftCard | undefined;
@@ -10,7 +11,7 @@ interface PurchaseCardProps {
 
 const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
     const [loading, setLoading] = useState(false);
-    const [currPayment, setCurrPayment] = useState(0);
+    const [currPayment, setCurrPayment] = useState<number>(0);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -27,7 +28,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
         let newValue: string | number = value;
 
         if (name === 'quantity') {
-            newValue = Number(value);
+            newValue = parseFloat(value);
         } else if (name === 'recharge') {
             newValue = parseFloat(value);
         }
@@ -41,12 +42,16 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
     const sendEmail = async (productId: number, transactionId: number) => {
         const redeem = await getRedeem(productId);
 
-        emailjs.send('service_e1m4w2p', 'template_sz9lkiu', {
+        const serviceID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_KEY || '';
+        const templateKey = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_KEY || '';
+        const userKey = process.env.NEXT_PUBLIC_EMAILJS_USER_KEY || '';
+
+        emailjs.send(serviceID, templateKey, {
             to_email: formData.email,
             from_name: `${formData.firstName} ${formData.lastName}`,
             transactionId: transactionId,
             redeem: redeem.verbose,
-        }, '7f_3dddqhfloTvbqF')
+        }, userKey)
         .then((response) => {
             console.log('SUCCESS!', response.status, response.text);
         }, (error) => {
@@ -55,15 +60,13 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
     };
 
     const handleCardSubmit = async () => {
-        console.log('form data >>>', formData);
-
         if (!currentCard) return;
 
         setLoading(true);
 
         try {
             const data = await purchaseCard(formData, currentCard);
-            console.log('response >>>', data);
+            console.log('response >>>', loading, data);
 
             sendEmail(data.product.productId, data.transactionId)
             setLoading(false);
@@ -80,7 +83,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                     <p>Select Card</p>
                 </div>}
             </div>
-            <form action={handleCardSubmit}>
+            <form>
                 <div className="mt-10 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-6">
                     <div className="sm:col-span-6 font-semibold">Sender Name:</div>
                     <div className="sm:col-span-3">
@@ -160,8 +163,8 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                     <div onClick={() => setCurrPayment(0)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
-                                checked={currPayment == 0}
-                                onChange={() => setCurrPayment(0)}
+                                checked={currPayment == 1}
+                                onChange={() => setCurrPayment(1)}
                                 id="push-everything"
                                 name="push-notifications"
                                 type="radio"
@@ -176,8 +179,8 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                     <div onClick={() => setCurrPayment(1)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
-                                checked={currPayment == 1}
-                                onChange={() => setCurrPayment(1)}
+                                checked={currPayment == 2}
+                                onChange={() => setCurrPayment(2)}
                                 id="push-email"
                                 name="push-notifications"
                                 type="radio"
@@ -192,8 +195,8 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                     <div onClick={() => setCurrPayment(2)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
-                                checked={currPayment == 2}
-                                onChange={() => setCurrPayment(2)}
+                                checked={currPayment == 3}
+                                onChange={() => setCurrPayment(3)}
                                 id="push-nothing"
                                 name="push-notifications"
                                 type="radio"
@@ -208,10 +211,11 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                 </div>
 
                 <div className="mt-6 w-full">
-                    <button type="submit" className="flex items-center justify-center rounded-md w-full border border-transparent bg-indigo-500 px-6 py-3 text-base font-bold text-white shadow-sm hover:bg-indigo-600" disabled={loading}>
+                    {/* <button type="submit" className="flex items-center justify-center rounded-md w-full border border-transparent bg-indigo-500 px-6 py-3 text-base font-bold text-white shadow-sm hover:bg-indigo-600" disabled={loading}>
                         {loading && <div className="border-gray-300 h-4 w-4 mr-3 animate-spin rounded-full border-2 border-t-blue-600" />}
                         Purchase Card
-                    </button>
+                    </button> */}
+                    {currPayment === 1 && <PaypalButton orderPrice={formData.recharge} handleCardSubmit={handleCardSubmit} />}
                 </div>
             </form>
         </div>

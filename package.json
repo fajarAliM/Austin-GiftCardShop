@@ -11,6 +11,8 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/react-paypal-js": "^8.7.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "emailjs-com": "^3.2.0",
