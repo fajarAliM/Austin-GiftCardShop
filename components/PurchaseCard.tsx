@@ -37,6 +37,9 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
 
         if (name === 'quantity') {
             newValue = parseFloat(value);
+        } else if (name === 'recharge') {
+            newValue = parseFloat(value);
+            setCurrPayment(0);
         }
 
         setFormData({
@@ -46,6 +49,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
     };
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setCurrPayment(0);
         setFormData({
             ...formData,
             recharge: parseFloat(e.target.value),
