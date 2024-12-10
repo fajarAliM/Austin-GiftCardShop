@@ -10,7 +10,7 @@ const PaypalButton = ({ orderPrice, handleCardSubmit }: PaypalButtonProps) => {
     const paypalCreateOrder = async () => {
         try {
             const response = await axios.post('/api/paypal/createorder', {
-                user_id: `sb-9a2ay34748160 ${Date.now()}`,
+                user_id: `sb9a2ay34748160_${Date.now()}`,
                 order_price: orderPrice
             })
             console.log('Order Response >>>', response);
