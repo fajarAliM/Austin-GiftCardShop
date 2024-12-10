@@ -5,6 +5,7 @@ import { getRedeem, purchaseCard } from "@/lib/reloadly";
 import emailjs from 'emailjs-com';
 import PaypalButton from "./PaypalButton";
 import { Field, Label, Select } from "@headlessui/react";
+import toast from "react-hot-toast";
 
 interface PurchaseCardProps {
     currentCard: TGiftCard | undefined;
@@ -83,10 +84,13 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
             const data = await purchaseCard(formData, currentCard);
             console.log('response >>>', loading, data);
 
-            sendEmail(data.product.productId, data.transactionId)
+            sendEmail(data.product.productId, data.transactionId);
+
+            toast.success('Gift Cards Purchased Successfully!');
             setLoading(false);
         } catch (error) {
             setLoading(false);
+            toast.error('Purchasing Failed...');
             console.log('error >>>', error);
         }
     };
@@ -137,7 +141,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                 <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-6">
                     <div className="sm:col-span-3">
                         <Field>
-                            <Label className="block text-sm/6 font-medium text-gray-900">Recharge {rechargeText}</Label>
+                            <Label className="block text-sm/6 font-medium text-gray-900">Recharge {currentCard && rechargeText}</Label>
                             <div className="relative mt-2">
                                 {currentCard?.fixedRecipientDenominations.length ? <Select
                                     className="custom-select block w-full h-9 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"

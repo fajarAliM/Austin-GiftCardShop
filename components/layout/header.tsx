@@ -1,9 +1,10 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { usePathname } from 'next/navigation';
 
 const navigation = [
   { name: 'Purchase Cards', href: '/', current: true },
-  { name: 'Play Game', href: '/game/123', current: false },
+  { name: 'Play Game', href: '#', current: false },
   { name: 'About US', href: '#', current: false },
   { name: 'Contact US', href: '#', current: false },
 ]
@@ -13,6 +14,9 @@ function classNames(...classes: string[]) {
 }
 
 const Header = () => {
+  const pathname = usePathname();
+  console.log('Current path', pathname);
+  
     return (
         <Disclosure as="nav" className="bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">

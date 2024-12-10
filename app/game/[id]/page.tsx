@@ -7,6 +7,7 @@ import { TGiftCard, TRedeemCode } from "@/components/types/GiftCard";
 import { getProductById, getRedeemCode } from "@/lib/reloadly";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface CardInfoProps {
     product: TGiftCard;
@@ -36,6 +37,8 @@ const Game = () => {
         setLoading(true);
         const product = await getProductById(productId);
         const redeemCode = await getRedeemCode(transactionId);
+
+        toast.success('Product Code Successfully Fetched!');
 
         setCardInfo({
             product: product,
@@ -69,7 +72,7 @@ const Game = () => {
                     <p className="text-lg text-blue-600">Please wait for a while...</p>
                 </div>
             ) : (
-                <div className="flex flex-col items-center pt-16 gap-8">
+                <div className="flex flex-col items-center py-16 gap-8">
                     <div className="max-w-[450px] h-64">
                         <GiftCard giftcard={cardInfo.product} />
                     </div>
