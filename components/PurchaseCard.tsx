@@ -50,6 +50,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
             to_email: formData.email,
             from_name: `${formData.firstName} ${formData.lastName}`,
             transactionId: transactionId,
+            productId: productId,
             redeem: redeem.verbose,
         }, userKey)
         .then((response) => {

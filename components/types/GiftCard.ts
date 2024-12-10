@@ -40,3 +40,8 @@ export type TGiftCard = {
         userIdRequired: boolean;
     };
 };
+
+export type TRedeemCode = {
+    cardNumber: string;
+    pinCode: string;
+}
