@@ -15,9 +15,9 @@ export type TGiftCard = {
     minSenderDenomination: number | null;
     maxSenderDenomination: number | null;
     fixedRecipientDenominations: number[];
-    fixedSenderDenominations: number[];
-    fixedRecipientToSenderDenominationsMap: Record<string, number>;
-    metadata: Record<string, unknown>;
+    fixedSenderDenominations: number[] | null;
+    fixedRecipientToSenderDenominationsMap: Record<string, number> | null;
+    metadata: Record<string, unknown> | null;
     logoUrls: string[];
     brand: {
         brandId: number;
