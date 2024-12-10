@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import GiftCard from "./GiftCard";
 import { TGiftCard } from "./types/GiftCard";
 import { getRedeem, purchaseCard } from "@/lib/reloadly";
 import emailjs from 'emailjs-com';
 import PaypalButton from "./PaypalButton";
+import { Field, Label, Select } from "@headlessui/react";
 
 interface PurchaseCardProps {
     currentCard: TGiftCard | undefined;
@@ -13,14 +14,20 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
     const [loading, setLoading] = useState(false);
     const [currPayment, setCurrPayment] = useState<number>(0);
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        name: '',
         email: '',
-        country: 'US',
         phoneNumber: '',
         recharge: 0,
         quantity: 0,
     });
+
+    const rechargeText = useMemo(() => currentCard?.fixedRecipientDenominations.length ? '' : `($${currentCard?.minRecipientDenomination} - $${currentCard?.maxRecipientDenomination})`, [currentCard]);
+
+    const formValidation = () => {
+        const { name, email, phoneNumber, recharge, quantity } = formData;
+
+        return name && email && phoneNumber && recharge && quantity;
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -29,13 +36,18 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
 
         if (name === 'quantity') {
             newValue = parseFloat(value);
-        } else if (name === 'recharge') {
-            newValue = parseFloat(value);
         }
 
         setFormData({
             ...formData,
             [name]: newValue,
+        });
+    };
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFormData({
+            ...formData,
+            recharge: parseFloat(e.target.value),
         });
     };
 
@@ -48,22 +60,24 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
 
         emailjs.send(serviceID, templateKey, {
             to_email: formData.email,
-            from_name: `${formData.firstName} ${formData.lastName}`,
+            from_name: formData.name,
             transactionId: transactionId,
             productId: productId,
             redeem: redeem.verbose,
         }, userKey)
-        .then((response) => {
-            console.log('SUCCESS!', response.status, response.text);
-        }, (error) => {
-            console.error('FAILED...', error);
-        });
+            .then((response) => {
+                console.log('SUCCESS!', response.status, response.text);
+            }, (error) => {
+                console.error('FAILED...', error);
+            });
     };
 
     const handleCardSubmit = async () => {
-        if (!currentCard) return;
+        if (!currentCard && formValidation()) return;
 
         setLoading(true);
+
+        console.log('Form data >>>>', formData);
 
         try {
             const data = await purchaseCard(formData, currentCard);
@@ -86,46 +100,23 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
             </div>
             <form>
                 <div className="mt-10 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-6">
-                    <div className="sm:col-span-6 font-semibold">Sender Name:</div>
-                    <div className="sm:col-span-3">
-                        <label htmlFor="first-name" className="block text-sm/6 font-medium text-gray-900">First name</label>
+                    <div className="sm:col-span-4">
+                        <label htmlFor="name" className="block text-sm/6 font-medium text-gray-900">From</label>
                         <div className="mt-2">
-                            <input type="text" name="firstName" id="first-name" autoComplete="given-name" value={formData.firstName} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
+                            <input type="text" name="name" id="name" placeholder="Your name" value={formData.name} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
                         </div>
                     </div>
 
                     <div className="sm:col-span-3">
-                        <label htmlFor="last-name" className="block text-sm/6 font-medium text-gray-900">Last name</label>
+                        <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">To</label>
                         <div className="mt-2">
-                            <input type="text" name="lastName" id="last-name" autoComplete="family-name" value={formData.lastName} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
-                        </div>
-                    </div>
-
-                    <div className="sm:col-span-6 font-semibold mt-3">Recipient Info:</div>
-                    <div className="sm:col-span-3">
-                        <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">Email address</label>
-                        <div className="mt-2">
-                            <input id="email" name="email" type="email" autoComplete="email" value={formData.email} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
-                        </div>
-                    </div>
-
-                    <div className="sm:col-span-3">
-                        <label htmlFor="country" className="block text-sm/6 font-medium text-gray-900">Country Code</label>
-                        <div className="mt-2 grid grid-cols-1">
-                            <select id="country" name="country" autoComplete="country-name" value={formData.country} onChange={handleChange} className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                                <option>US</option>
-                                <option>CA</option>
-                                <option>MX</option>
-                            </select>
-                            <svg className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                            </svg>
+                            <input id="email" name="email" type="email" placeholder="johndoe@gmail.com" value={formData.email} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
                         </div>
                     </div>
 
                     <div className="sm:col-span-3">
                         <label htmlFor="phone-number" className="block text-sm/6 font-medium text-gray-900">Phone number</label>
-                        <div className="mt-2.5">
+                        <div className="mt-2">
                             <div className="flex rounded-md bg-white outline outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-600">
                                 <div className="grid shrink-0 grid-cols-1 focus-within:relative">
                                     <select id="country" name="country" autoComplete="country" aria-label="Country" className="col-start-1 row-start-1 w-full appearance-none rounded-md py-2 pl-3.5 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -143,13 +134,22 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                     </div>
                 </div>
 
-                <div className="mt-10 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-6">
-                    <div className="sm:col-span-6 font-semibold">Payment:</div>
+                <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-6">
                     <div className="sm:col-span-3">
-                        <label htmlFor="recharge" className="block text-sm/6 font-medium text-gray-900">Recharge</label>
-                        <div className="mt-2">
-                            <input type="number" name="recharge" id="recharge" value={formData.recharge} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
-                        </div>
+                        <Field>
+                            <Label className="block text-sm/6 font-medium text-gray-900">Recharge {rechargeText}</Label>
+                            <div className="relative mt-2">
+                                {currentCard?.fixedRecipientDenominations.length ? <Select
+                                    className="custom-select block w-full h-9 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                    value={formData.recharge}
+                                    onChange={handleSelectChange}
+                                >
+                                    {[0, ...currentCard.fixedRecipientDenominations].map((value, key) =>
+                                        <option key={key} value={value}>{value}</option>
+                                    )}
+                                </Select> : <input type="number" name="recharge" id="recharge" value={formData.recharge} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />}
+                            </div>
+                        </Field>
                     </div>
 
                     <div className="sm:col-span-3">
@@ -160,7 +160,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                     </div>
                 </div>
 
-                <div className="mt-6 space-y-2">
+                <div className="mt-12 space-y-2">
                     <div onClick={() => setCurrPayment(0)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
