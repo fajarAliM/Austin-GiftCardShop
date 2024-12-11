@@ -169,7 +169,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                 </div>
 
                 <div className="mt-12 space-y-2">
-                    <div onClick={() => setCurrPayment(0)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
+                    <div onClick={() => setCurrPayment(1)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
                                 checked={currPayment == 1}
@@ -185,7 +185,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                         </div>
                         <img src="/images/paypal.png" alt="Paypal" className="w-14 h-14" />
                     </div>
-                    <div onClick={() => setCurrPayment(1)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
+                    <div onClick={() => setCurrPayment(2)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
                                 checked={currPayment == 2}
@@ -201,7 +201,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                         </div>
                         <img src="/images/apple-pay.png" alt="Apple Pay" className="w-14 h-14" />
                     </div>
-                    <div onClick={() => setCurrPayment(2)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
+                    <div onClick={() => setCurrPayment(3)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
                                 checked={currPayment == 3}
@@ -224,7 +224,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                         {loading && <div className="border-gray-300 h-4 w-4 mr-3 animate-spin rounded-full border-2 border-t-blue-600" />}
                         Purchase Card
                     </button> */}
-                    {currPayment === 1 && <PaypalButton orderPrice={formData.recharge} handleCardSubmit={handleCardSubmit} />}
+                    {currPayment === 1 && <PaypalButton orderPrice={formData.recharge * formData.quantity} handleCardSubmit={handleCardSubmit} />}
                 </div>
             </form>
         </div>
