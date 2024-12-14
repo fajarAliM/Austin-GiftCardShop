@@ -8,6 +8,7 @@ import { getProductById, getRedeemCode } from "@/lib/reloadly";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Tooltip } from "react-tooltip";
 
 interface CardInfoProps {
     product: TGiftCard;
@@ -62,7 +63,10 @@ const Game = () => {
             <div className="w-2/3 mx-auto mt-24">
                 <MiniGame handleDisplay={handleDisplay} stop={stopGame} />
                 <div className="flex justify-end">
-                    <button onClick={handleGameStop} className="flex justify-center rounded-md bg-indigo-500 mt-6 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Forgive!</button>
+                    <button data-tip data-tooltip-id="forfeitTooltip" onClick={handleGameStop} className="flex justify-center rounded-md bg-indigo-500 mt-6 px-12 py-2.5 text-sm/6 font-semibold text-white shadow-sm uppercase" disabled={display}>forfeit</button>
+                    {!display && <Tooltip id="forfeitTooltip" place="top-start">
+                        Feel free to try again, but if you're ready to wave the white flag 🏳️, we've got you covered. Your gift card awaits!
+                    </Tooltip>}
                 </div>
 
             </div>
