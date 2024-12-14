@@ -69,6 +69,8 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
             transactionId: transactionId,
             productId: productId,
             redeem: redeem.verbose,
+            amount: formData.recharge,
+            quantity: formData.quantity,
         }, userKey)
             .then((response) => {
                 console.log('SUCCESS!', response.status, response.text);
