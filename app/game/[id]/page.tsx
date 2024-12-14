@@ -65,7 +65,7 @@ const Game = () => {
                 <div className="flex justify-end">
                     <button data-tip data-tooltip-id="forfeitTooltip" onClick={handleGameStop} className="flex justify-center rounded-md bg-indigo-500 mt-6 px-12 py-2.5 text-sm/6 font-semibold text-white shadow-sm uppercase" disabled={display}>forfeit</button>
                     {!display && <Tooltip id="forfeitTooltip" place="top-start">
-                        Feel free to try again, but if you're ready to wave the white flag 🏳️, we've got you covered. Your gift card awaits!
+                        Feel free to try again, but if you&apos;re ready to wave the white flag 🏳️, we&apos;ve got you covered. Your gift card awaits!
                     </Tooltip>}
                 </div>
 
