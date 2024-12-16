@@ -162,12 +162,14 @@ export const MiniGame: React.FC<MiniGameProps> = ({ stop, handleDisplay }) => {
       );
       handleDisplay(true);
     }
-  }, [stop]);
+  }, [handleDisplay, stop]);
 
   const updateActiveRow = () => {
     if (activeRowIndex < rows.length) {
+      console.log('update active row');
       setActiveRowIndex((prevIndex) => prevIndex + 1);
     } else {
+      console.log('reset game');
       resetGame();
     }
   };

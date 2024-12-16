@@ -4,7 +4,6 @@ import { TGiftCard } from "./types/GiftCard";
 import { getRedeem, purchaseCard } from "@/lib/reloadly";
 import emailjs from 'emailjs-com';
 import PaypalButton from "./PaypalButton";
-import { Field, Label, Select } from "@headlessui/react";
 import toast from "react-hot-toast";
 
 interface PurchaseCardProps {
@@ -13,6 +12,7 @@ interface PurchaseCardProps {
 
 const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
     const [loading, setLoading] = useState(false);
+    const [currCharge, setCurrCharge] = useState(0);
     const [currPayment, setCurrPayment] = useState<number>(0);
     const [formData, setFormData] = useState({
         name: '',
@@ -22,7 +22,40 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
         quantity: 0,
     });
 
-    const rechargeText = useMemo(() => currentCard?.fixedRecipientDenominations.length ? '' : `($${currentCard?.minRecipientDenomination} - $${currentCard?.maxRecipientDenomination})`, [currentCard]);
+    const chargeOptions = useMemo(() => {
+        setCurrCharge(0);
+
+        if (currentCard?.fixedRecipientDenominations.length) {
+            return currentCard.fixedRecipientDenominations;
+        } else {
+            return generatePriceOption(currentCard?.minRecipientDenomination, currentCard?.maxRecipientDenomination);
+        }
+    }, [currentCard]);
+
+    function generatePriceOption(min: number | null | undefined, max: number | null | undefined) {
+        if (!min || !max) {
+            return
+        }
+
+        const result = [];
+        const steps = [1, 5, 10, 20, 25, 50, 75, 100];
+    
+        for (const step of steps) {
+            if (step >= min && step <= max) {
+                result.push(step);
+            }
+        }
+    
+        if (result[0] !== min) {
+            result.unshift(min);
+        }
+    
+        if (result[result.length - 1] !== max) {
+            result.push(max);
+        }
+    
+        return result;
+    }
 
     const formValidation = () => {
         const { name, email, phoneNumber, recharge, quantity } = formData;
@@ -37,8 +70,6 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
 
         if (name === 'quantity') {
             newValue = parseFloat(value);
-        } else if (name === 'recharge') {
-            newValue = parseFloat(value);
             setCurrPayment(0);
         }
 
@@ -48,13 +79,14 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
         });
     };
 
-    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChargeOption = (option: number) => {
+        setCurrCharge(option);
         setCurrPayment(0);
         setFormData({
             ...formData,
-            recharge: parseFloat(e.target.value),
+            recharge: option,
         });
-    };
+    }
 
     const sendEmail = async (productId: number, transactionId: number) => {
         const redeem = await getRedeem(productId);
@@ -145,27 +177,16 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                 </div>
 
                 <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-6">
-                    <div className="sm:col-span-3">
-                        <Field>
-                            <Label className="block text-sm/6 font-medium text-gray-900">Recharge {currentCard && rechargeText}</Label>
-                            <div className="relative mt-2">
-                                {currentCard?.fixedRecipientDenominations.length ? <Select
-                                    className="custom-select block w-full h-9 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                    value={formData.recharge}
-                                    onChange={handleSelectChange}
-                                >
-                                    {[0, ...currentCard.fixedRecipientDenominations].map((value, key) =>
-                                        <option key={key} value={value}>{value}</option>
-                                    )}
-                                </Select> : <input type="number" name="recharge" id="recharge" value={formData.recharge} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />}
-                            </div>
-                        </Field>
+                    <div className="sm:col-span-6 flex flex-wrap gap-3">
+                        {chargeOptions?.map((option, key) => <div key={key} className={`px-3 py-2 border-2 border-slate-700 rounded min-w-20 flex justify-center ${currCharge === option ? 'text-slate-800 font-semibold' : 'text-slate-600'} hover:text-slate-800 hover:font-semibold cursor-pointer`} onClick={() => handleChargeOption(option)}>
+                            ${option.toFixed(2)}
+                        </div>)}
                     </div>
 
-                    <div className="sm:col-span-3">
+                    <div className="sm:col-span-6 mt-6">
                         <label htmlFor="quantity" className="block text-sm/6 font-medium text-gray-900">Quantity</label>
                         <div className="mt-2">
-                            <input type="number" name="quantity" id="quantity" value={formData.quantity} onChange={handleChange} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" required />
+                            <input type="number" name="quantity" id="quantity" value={formData.quantity} onChange={handleChange} className="block rounded-md bg-white px-3 py-1.5 w-14 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 sm:text-sm/6" required />
                         </div>
                     </div>
                 </div>
@@ -187,7 +208,7 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                         </div>
                         <img src="/images/paypal.png" alt="Paypal" className="w-14 h-14" />
                     </div>
-                    <div onClick={() => setCurrPayment(2)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
+                    {/* <div onClick={() => setCurrPayment(2)} className="flex justify-between items-center gap-x-3 px-3 border border-neutral-300 rounded-md">
                         <div className="flex items-center gap-x-3">
                             <input
                                 checked={currPayment == 2}
@@ -218,14 +239,10 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
                             </label>
                         </div>
                         <img src="/images/google-pay.png" alt="Google Pay" className="w-14 h-14" />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="mt-6 w-full">
-                    {/* <button type="submit" className="flex items-center justify-center rounded-md w-full border border-transparent bg-indigo-500 px-6 py-3 text-base font-bold text-white shadow-sm hover:bg-indigo-600" disabled={loading}>
-                        {loading && <div className="border-gray-300 h-4 w-4 mr-3 animate-spin rounded-full border-2 border-t-blue-600" />}
-                        Purchase Card
-                    </button> */}
                     {currPayment === 1 && <PaypalButton orderPrice={formData.recharge * formData.quantity} handleCardSubmit={handleCardSubmit} />}
                 </div>
             </form>
@@ -234,3 +251,8 @@ const PurchaseCard = ({ currentCard }: PurchaseCardProps) => {
 };
 
 export default PurchaseCard;
+
+
+
+
+
