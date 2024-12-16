@@ -50,3 +50,13 @@ body {
   background-position: right 0.75rem center;
   background-size: 0.65rem;
 }
+
+.home-hero {
+  background: url('/images/imgpsh_fullsize_anim.jpg') no-repeat;
+  background-size: cover;
+}
+
+.home-final {
+  background: url('/images/final.jpg') no-repeat;
+  background-size: cover;
+}

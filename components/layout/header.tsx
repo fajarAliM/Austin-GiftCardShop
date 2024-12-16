@@ -1,9 +1,9 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 const navigation = [
-  { name: 'Purchase Cards', href: '/', current: true },
+  { name: 'Purchase Cards', href: '/purchase', current: true },
   { name: 'Play Game', href: '#', current: false },
   { name: 'About US', href: '#', current: false },
   { name: 'Contact US', href: '#', current: false },
@@ -14,11 +14,8 @@ function classNames(...classes: string[]) {
 }
 
 const Header = () => {
-  const pathname = usePathname();
-  console.log('Current path', pathname);
-  
-    return (
-        <Disclosure as="nav" className="bg-gray-800">
+  return (
+    <Disclosure as="nav" className="bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -32,11 +29,13 @@ const Header = () => {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              <img
-                alt="Your Company"
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
-                className="h-8 w-auto"
-              />
+              <Link href="/">
+                <img
+                  alt="Your Company"
+                  src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
+                  className="h-8 w-auto"
+                />
+              </Link>
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
@@ -132,7 +131,7 @@ const Header = () => {
         </div>
       </DisclosurePanel>
     </Disclosure>
-    )
+  )
 };
 
 export default Header;

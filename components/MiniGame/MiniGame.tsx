@@ -34,7 +34,7 @@ const MiniGame = ({ stop, handleDisplay }: MiniGameProps) => {
       setoverbtn("TIME'S UP");
     }
   }
-  
+
   useEffect(() => {
     if (stop) {
       handleDisplay(true);
