@@ -2,7 +2,7 @@
 
 import GiftCard from "@/components/GiftCard";
 import Header from "@/components/layout/header";
-import { MiniGame } from "@/components/MiniGame/MiniGame";
+import MiniGame from "@/components/MiniGame/MiniGame";
 import { TGiftCard, TRedeemCode } from "@/components/types/GiftCard";
 import { getProductById, getRedeemCode } from "@/lib/reloadly";
 import { useParams } from "next/navigation";
