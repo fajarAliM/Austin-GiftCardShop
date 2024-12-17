@@ -46,3 +46,40 @@
   font-size: 4rem;
   letter-spacing: 4px;
 }
+
+.ball {
+	display: block;
+	width: 30px;
+	height: 30px;
+  border: 1.5px solid white;
+	border-radius: 50%;
+  background: radial-gradient(circle at 65% 15%, white 1px, white 3%, black 60%, gray 100%);  
+}
+
+.game-container {
+  position: relative; 
+  width: 800px;
+  height: 500px; 
+  margin: auto;
+  border: 1px solid white;
+  border-radius: 8px;
+  background-image: url('/images/pongbg.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.game-score {
+  font-size: 28px;
+  font-weight: 700;
+  color: rgb(243, 25, 25);
+  text-align: center;
+  text-shadow: rgb(247, 247, 247) 1px 0 12px;
+  padding-top: 8px;
+}
+
+.game-controls {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

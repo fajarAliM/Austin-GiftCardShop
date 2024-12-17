@@ -2,7 +2,7 @@
 
 import GiftCard from "@/components/GiftCard";
 import Header from "@/components/layout/header";
-import MiniGame from "@/components/MiniGame/MiniGame";
+import GameBoard from "@/components/MiniGame/GameBoard";
 import { TGiftCard, TRedeemCode } from "@/components/types/GiftCard";
 import { getProductById, getRedeemCode } from "@/lib/reloadly";
 import { useParams } from "next/navigation";
@@ -60,15 +60,14 @@ const Game = () => {
     return (
         <div>
             <Header />
-            <div className="w-2/3 mx-auto mt-24">
-                <MiniGame handleDisplay={handleDisplay} stop={stopGame} />
-                <div className="flex justify-end">
-                    <button data-tip data-tooltip-id="forfeitTooltip" onClick={handleGameStop} className="flex justify-center rounded-md bg-indigo-500 mt-6 px-12 py-2.5 text-sm/6 font-semibold text-white shadow-sm uppercase" disabled={display}>forfeit</button>
-                    {!display && <Tooltip id="forfeitTooltip" place="top-start">
+            <div className="m-auto mt-24">
+                <GameBoard handleDisplay={handleDisplay} stop={stopGame} />
+                <div className="flex justify-center">
+                    <button data-tip data-tooltip-id="forfeitTooltip" onClick={handleGameStop} className="flex justify-center rounded-md bg-orange-500 mt-6 px-12 py-2.5 text-sm/6 font-semibold text-white shadow-sm uppercase" disabled={display}>forfeit</button>
+                    {!display && <Tooltip id="forfeitTooltip" place="top">
                         Feel free to try again, but if you&apos;re ready to wave the white flag 🏳️, we&apos;ve got you covered. Your gift card awaits!
                     </Tooltip>}
                 </div>
-
             </div>
             {display && (loading ? (
                 <div className="w-full flex flex-col items-center justify-center pt-12 gap-8">
