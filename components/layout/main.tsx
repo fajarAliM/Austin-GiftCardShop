@@ -6,9 +6,9 @@ const Main = () => {
 
     return (
         <div className="w-full">
-            <div className="home-hero flex flex-col justify-center items-center px-4">
-                <h1 className="text-yellow-300 text-5xl font-bold drop-shadow-lg pt-16">Unbox Your Gift Card Like a Champ!</h1>
-                <h3 className="text-white text-2xl font-bold drop-shadow-xl py-6">Forget boring gift cards. Play. Win. Celebrate.</h3>
+            <div className="flex flex-col justify-center items-center px-4 border-b">
+                <h1 className="text-5xl font-bold drop-shadow-lg pt-16">Unbox Your Gift Card Like a Champ!</h1>
+                <h3 className="text-2xl font-bold drop-shadow-xl py-6">Forget boring gift cards. Play. Win. Celebrate.</h3>
                 <Link href="/purchase" className="bg-blue-500 hover:bg-blue-400 inline-flex items-center justify-center px-12 py-3 text-base text-center text-white uppercase font-semibold rounded-lg my-12">
                     Ready to Score?
                 </Link>
@@ -140,9 +140,9 @@ const Main = () => {
                 </div>
             </div>
 
-            <div className="home-final flex flex-col justify-center items-center px-4">
-                <h1 className="text-green-600 text-5xl font-bold drop-shadow-lg pt-16">Stop Sending Boring Gift Cards!</h1>
-                <h3 className="text-indigo-500 text-2xl font-bold drop-shadow-xl py-6">Put the fun back in gifting. Let them win (or lose) their way to happiness.</h3>
+            <div className="flex flex-col justify-center items-center px-4 border-t">
+                <h1 className="text-5xl font-bold drop-shadow-lg pt-16">Stop Sending Boring Gift Cards!</h1>
+                <h3 className="text-2xl font-bold drop-shadow-xl py-6">Put the fun back in gifting. Let them win (or lose) their way to happiness.</h3>
                 <Link href="/purchase" className="bg-green-500 hover:bg-green-400 inline-flex items-center justify-center px-12 py-3 text-base text-center text-white uppercase font-semibold rounded-lg my-12">
                     Level Up Your Gifts!
                 </Link>
