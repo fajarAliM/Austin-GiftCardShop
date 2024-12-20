@@ -2,7 +2,7 @@
 
 import GiftCard from "@/components/GiftCard";
 import Header from "@/components/layout/header";
-import GameBoard from "@/components/MiniGame/GameBoard";
+import ShootingGame from "@/components/MiniGame/ShootingGame";
 import { TGiftCard, TRedeemCode } from "@/components/types/GiftCard";
 import { getProductById, getRedeemCode } from "@/lib/reloadly";
 import { useParams } from "next/navigation";
@@ -61,7 +61,7 @@ const Game = () => {
         <div>
             <Header />
             <div className="m-auto mt-24">
-                <GameBoard handleDisplay={handleDisplay} stop={stopGame} />
+                <ShootingGame handleDisplay={handleDisplay} stop={stopGame} />
                 <div className="flex justify-center">
                     <button data-tip data-tooltip-id="forfeitTooltip" onClick={handleGameStop} className="flex justify-center rounded-md bg-orange-500 mt-6 px-12 py-2.5 text-sm/6 font-semibold text-white shadow-sm uppercase" disabled={display}>forfeit</button>
                     {!display && <Tooltip id="forfeitTooltip" place="top">
